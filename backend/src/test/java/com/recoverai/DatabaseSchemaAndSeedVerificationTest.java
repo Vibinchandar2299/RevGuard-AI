@@ -173,9 +173,9 @@ class DatabaseSchemaAndSeedVerificationTest {
         assertThat(manualCalculation).isEqualByComparingTo("69.09");
         assertThat(manualCalculation.doubleValue()).isBetween(65.0, 75.0);
 
-        // Events count per customer
+        // Events count per customer in synthetic batch
         Integer customerCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT customer_id) FROM payment_events",
+                "SELECT COUNT(DISTINCT customer_id) FROM payment_events WHERE batch_id = (SELECT id FROM recovery_batches WHERE batch_name = 'BATCH-2026-SYNTH-01')",
                 Integer.class
         );
         assertThat(customerCount).isEqualTo(20);
