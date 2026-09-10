@@ -11,4 +11,13 @@ import java.util.UUID;
 public interface RecoveryMessageRepository extends JpaRepository<RecoveryMessage, UUID> {
     List<RecoveryMessage> findByPaymentEventId(UUID paymentEventId);
     List<RecoveryMessage> findByStatus(String status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT m FROM RecoveryMessage m LEFT JOIN FETCH m.paymentEvent p LEFT JOIN FETCH p.customer WHERE m.status = :status")
+    List<RecoveryMessage> findByStatusWithDetails(@org.springframework.data.repository.query.Param("status") String status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT m FROM RecoveryMessage m LEFT JOIN FETCH m.paymentEvent p LEFT JOIN FETCH p.customer")
+    List<RecoveryMessage> findAllWithDetails();
+
+    @org.springframework.data.jpa.repository.Query("SELECT m FROM RecoveryMessage m LEFT JOIN FETCH m.paymentEvent p LEFT JOIN FETCH p.customer WHERE m.id = :id")
+    java.util.Optional<RecoveryMessage> findByIdWithDetails(@org.springframework.data.repository.query.Param("id") UUID id);
 }

@@ -23,7 +23,7 @@ public class PaymentEvent {
     @Column(name = "event_id", nullable = false, unique = true)
     private String eventId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 

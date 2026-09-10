@@ -31,7 +31,8 @@ public class DraftService {
      * Creates a customer recovery communication draft with status DRAFTED.
      */
     @Transactional
-    public RecoveryMessage createDraftForEvent(PaymentEvent event) {
+    public RecoveryMessage createDraftForEvent(PaymentEvent eventInput) {
+        PaymentEvent event = paymentEventRepository.findById(eventInput.getId()).orElse(eventInput);
         log.info("[STAGE 2/3: MESSAGING DRAFT] Generating recovery message draft for event {}", event.getEventId());
 
         String customerName = event.getCustomer() != null ? event.getCustomer().getName() : "Valued Customer";
@@ -89,21 +90,21 @@ public class DraftService {
 
     @Transactional(readOnly = true)
     public List<MessageDraftResponse> getPendingDrafts() {
-        return messageRepository.findByStatus("DRAFTED").stream()
+        return messageRepository.findByStatusWithDetails("DRAFTED").stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<MessageDraftResponse> getAllMessages() {
-        return messageRepository.findAll().stream()
+        return messageRepository.findAllWithDetails().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public MessageDraftResponse approveMessage(UUID messageId, String reviewer, String comments) {
-        RecoveryMessage message = messageRepository.findById(messageId)
+        RecoveryMessage message = messageRepository.findByIdWithDetails(messageId)
                 .orElseThrow(() -> new IllegalArgumentException("Recovery message not found: " + messageId));
 
         message.setStatus("SENT");
@@ -127,7 +128,7 @@ public class DraftService {
 
     @Transactional
     public MessageDraftResponse rejectMessage(UUID messageId, String reviewer, String comments) {
-        RecoveryMessage message = messageRepository.findById(messageId)
+        RecoveryMessage message = messageRepository.findByIdWithDetails(messageId)
                 .orElseThrow(() -> new IllegalArgumentException("Recovery message not found: " + messageId));
 
         message.setStatus("REJECTED");
