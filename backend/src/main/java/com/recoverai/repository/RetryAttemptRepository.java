@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface RetryAttemptRepository extends JpaRepository<RetryAttempt, UUID> {
+    List<RetryAttempt> findByPaymentEventId(UUID paymentEventId);
     List<RetryAttempt> findByPaymentEventIdOrderByAttemptNumberAsc(UUID paymentEventId);
     Optional<RetryAttempt> findByPaymentEventIdAndAttemptNumber(UUID paymentEventId, Integer attemptNumber);
     int countByPaymentEventId(UUID paymentEventId);
