@@ -11,6 +11,7 @@ import java.util.UUID;
 @Repository
 public interface RecoveryPolicyRepository extends JpaRepository<RecoveryPolicy, UUID> {
     List<RecoveryPolicy> findByActiveTrue();
+    long countByActiveTrue();
     Optional<RecoveryPolicy> findByReasonCodeAndActiveTrue(String reasonCode);
     Optional<RecoveryPolicy> findByReasonCodeAndVersion(String reasonCode, Integer version);
 }
